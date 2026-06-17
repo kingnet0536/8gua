@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>八字排盘 - 周易命理</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🎯 八字排盘</h1>
+                <p>周易命理系统</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-phone">手机号</label>
+                    <input type="tel" id="login-phone" placeholder="请输入手机号" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码">
+                </div>
+                <button type="submit" class="btn-login">登录</button>
+            </form>
+            <div id="login-error" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- 主页面 -->
+    <div id="main-page" class="container hidden">
+        <header>
+            <div class="header-top">
+                <h1>🎯 八字排盘</h1>
+                <div class="user-info">
+                    <span id="current-user"></span>
+                    <button id="logout-btn" class="logout-btn">退出登录</button>
+                </div>
+            </div>
+            <p class="subtitle hidden">基于寿星万年历算法</p>
+            <!-- 用户管理按钮（仅管理员可见） -->
+            <div id="admin-panel" class="admin-panel hidden">
+                <button id="user-management-btn" class="admin-btn">用户管理</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>输入出生信息</h2>
+                <form id="baziForm">
+                    <div class="date-row">
+                        <div class="date-item">
+                            <label for="year">年:</label>
+                            <input type="number" id="year" min="1900" max="2100" placeholder="年">
+                        </div>
+                        <div class="date-item">
+                            <label for="month">月:</label>
+                            <input type="number" id="month" min="1" max="12" placeholder="月">
+                        </div>
+                        <div class="date-item">
+                            <label for="day">日:</label>
+                            <input type="number" id="day" min="1" max="31" placeholder="日">
+                        </div>
+                        <div class="date-item">
+                            <label for="time">时辰:</label>
+                            <select id="time">
+                                <option value="" disabled selected>时</option>
+                                <option value="23">子时 (23:00-01:00)</option>
+                                <option value="1">丑时 (01:00-03:00)</option>
+                                <option value="3">寅时 (03:00-05:00)</option>
+                                <option value="5">卯时 (05:00-07:00)</option>
+                                <option value="7">辰时 (07:00-09:00)</option>
+                                <option value="9">巳时 (09:00-11:00)</option>
+                                <option value="11">午时 (11:00-13:00)</option>
+                                <option value="13">未时 (13:00-15:00)</option>
+                                <option value="15">申时 (15:00-17:00)</option>
+                                <option value="17">酉时 (17:00-19:00)</option>
+                                <option value="19">戌时 (19:00-21:00)</option>
+                                <option value="21">亥时 (21:00-23:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group lunar-display">
+                        <label>对应农历:</label>
+                        <span id="solar-to-lunar">-</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">性别:</label>
+                        <select id="gender">
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="consultType">咨询事宜:</label>
+                        <input type="text" id="consultType" placeholder="例如：事业财运、婚姻感情、健康状况等">
+                    </div>
+                    
+                    <!-- 八卦组合区域 -->
+                    <div class="bagua-section">
+                        <h3>八卦组合</h3>
+                        
+                        <!-- 数字输入区域 -->
+                        <div class="bagua-number-input">
+                            <label>数字起卦：</label>
+                            <input type="number" id="num1" min="0" max="99">
+                            <span class="num-separator">+</span>
+                            <input type="number" id="num2" min="0" max="99">
+                            <span class="num-separator">+</span>
+                            <input type="number" id="num3" min="0" max="99">
+                            <button type="button" id="calc-bagua-btn">起卦</button>
+                        </div>
+                        
+                        <div class="bagua-row">
+                            <!-- 本卦 -->
+                            <div class="bagua-group">
+                                <label class="bagua-label">本卦</label>
+                                <div class="bagua-pair">
+                                    <select class="bagua-select" id="ben-gua-shang">
+                                        <option value="" disabled selected>上卦</option>
+                                    </select>
+                                    <select class="bagua-select" id="ben-gua-xia">
+                                        <option value="" disabled selected>下卦</option>
+                                    </select>
+                                </div>
+                                <div class="bagua-result" id="ben-gua-result">-</div>
+                            </div>
+                            
+                            <!-- 互卦 -->
+                            <div class="bagua-group">
+                                <label class="bagua-label">互卦</label>
+                                <div class="bagua-pair">
+                                    <select class="bagua-select" id="hu-gua-shang">
+                                        <option value="" disabled selected>上卦</option>
+                                    </select>
+                                    <select class="bagua-select" id="hu-gua-xia">
+                                        <option value="" disabled selected>下卦</option>
+                                    </select>
+                                </div>
+                                <div class="bagua-result" id="hu-gua-result">-</div>
+                            </div>
+                            
+                            <!-- 变卦 -->
+                            <div class="bagua-group">
+                                <label class="bagua-label">变卦</label>
+                                <div class="bagua-pair">
+                                    <select class="bagua-select" id="bian-gua-shang">
+                                        <option value="" disabled selected>上卦</option>
+                                    </select>
+                                    <select class="bagua-select" id="bian-gua-xia">
+                                        <option value="" disabled selected>下卦</option>
+                                    </select>
+                                </div>
+                                <div class="bagua-result" id="bian-gua-result">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-calculate">排盘</button>
+                </form>
+            </div>
+
+            <div id="result-section" class="result-section hidden">
+                <h2>排盘结果</h2>
+                <div id="result-content"></div>
+                <div id="search-section" class="search-section hidden">
+                    <button id="search-btn" class="search-btn">🔍 网络搜索咨询事宜解释</button>
+                    <button id="ernie-btn" class="ernie-btn">🤖 文心一言AI解读</button>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户管理模态框 -->
+    <div id="user-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>用户管理</h3>
+                <button id="close-modal" class="close-modal-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-list-header">
+                    <button id="add-user-btn" class="add-user-btn">添加用户</button>
+                </div>
+                <table id="user-table">
+                    <thead>
+                        <tr>
+                            <th>手机号</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加用户模态框 -->
+    <div id="add-user-modal" class="modal-overlay hidden">
+        <div class="modal-content add-user-content">
+            <div class="modal-header">
+                <h3>添加用户</h3>
+                <button id="close-add-modal" class="close-modal-btn">✕</button>
+            </div>
+            <form id="add-user-form">
+                <div class="form-group">
+                    <label for="new-phone">手机号</label>
+                    <input type="tel" id="new-phone" placeholder="请输入手机号" maxlength="11" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-role">角色</label>
+                    <select id="new-role">
+                        <option value="user">普通用户</option>
+                        <option value="admin">管理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">密码（默认123456）</label>
+                    <input type="password" id="new-password" placeholder="密码，默认为123456">
+                </div>
+                <button type="submit" class="btn-add-user">添加</button>
+                <button type="button" id="cancel-add-user" class="btn-cancel">取消</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="bazi.js"></script>
+</body>
+</html>
